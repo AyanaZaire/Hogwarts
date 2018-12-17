@@ -22,6 +22,30 @@
   color: #61dafb;
 }
 
+.indexImg {
+  width: 30%;
+}
+
+.charCard {
+  border-style: groove;
+  border-color: blue;
+}
+
+.charContainer {
+  border-style: groove;
+  border-color: red;
+}
+
+.houseList {
+  border-style: groove;
+  border-color: green;
+}
+
+.houseListContainer {
+  border-style: groove;
+  border-color: orange;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
