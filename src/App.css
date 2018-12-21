@@ -54,3 +54,16 @@
     transform: rotate(360deg);
   }
 }
+
+.navbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background-color: #dddddd;
+}
+
+.navitem {
+  display: inline;
+  padding: 10%;
+}

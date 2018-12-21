@@ -1,10 +1,13 @@
 import React, { Component } from "react";
+import { Route, Switch } from "react-router-dom";
 import logo from "./logo.svg";
 import "./App.css";
 import CharacterContainer from "./Containers/CharacterContainer";
 import HouseEditForm from "./Components/HouseEditForm";
+import Home from "./Components/Home";
 import Form from "./Components/NewCharacterForm";
 import SearchForm from "./Components/SearchForm";
+import NavBar from "./Components/NavBar";
 import HouseListContainer from "./Containers/HouseListContainer";
 
 class App extends Component {
@@ -80,24 +83,48 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Form submitHandler={this.handleSubmit} />
-        <br />
-        <SearchForm
+        <NavBar />
+        <Switch>
+          {/* Difference between eventListener:{this.callback} vs eventListener:{() => this.callback(arguments)} */}
+          <Route
+            path="/characters"
+            render={() => (
+              <CharacterContainer
+                characters={this.state.filteredArr}
+                handleCharacterClick={this.handleCharacterClick}
+              />
+            )}
+          />
+          <Route
+            path="/houses"
+            render={() => (
+              <HouseListContainer
+                characters={this.state.filteredArr}
+                handleCharacterClick={this.handleCharacterClick}
+              />
+            )}
+          />
+          <Route path="/" component={Home} />
+        </Switch>
+        {/* <br />
+          <Form submitHandler={this.handleSubmit} />
+          <br />
+          <SearchForm
           searchTerm={this.state.searchTerm}
           changeHandler={this.searchChangeHandler}
-        />
-        <CharacterContainer
+          />
+          <CharacterContainer
           characters={this.state.filteredArr}
           handleCharacterClick={this.handleCharacterClick}
-        />
-        <HouseEditForm
+          />
+          <HouseEditForm
           character={this.state.filteredArr}
           handleHouseChange={this.handleHouseChange}
-        />
-        <HouseListContainer
+          />
+          <HouseListContainer
           characters={this.state.filteredArr}
           handleCharacterClick={this.handleCharacterClick}
-        />
+        /> */}
       </div>
     );
   }
