@@ -14,6 +14,8 @@ class HouseList extends React.Component {
             handleCharacterClick={this.props.handleCharacterClick}
           />
         );
+      } else {
+        return null;
       }
     });
   };

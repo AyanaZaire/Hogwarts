@@ -1,17 +1,19 @@
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
-import logo from "./logo.svg";
+import { Route, Switch, withRouter } from "react-router-dom";
 import "./App.css";
 import CharacterContainer from "./Containers/CharacterContainer";
-import HouseEditForm from "./Components/HouseEditForm";
+// import HouseEditForm from "./Components/HouseEditForm";
 import Home from "./Components/Home";
-import Form from "./Components/NewCharacterForm";
-import SearchForm from "./Components/SearchForm";
+// import Form from "./Components/NewCharacterForm";
+// import SearchForm from "./Components/SearchForm";
 import NavBar from "./Components/NavBar";
+import SignupForm from "./Components/SignupForm";
+import LoginForm from "./Components/LoginForm";
 import HouseListContainer from "./Containers/HouseListContainer";
 
 class App extends Component {
   state = {
+    user: null,
     characters: [],
     filteredArr: [],
     character: {},
@@ -20,7 +22,19 @@ class App extends Component {
   };
 
   componentDidMount() {
-    //fetch the data from db JSON
+    this.fetchCharacters();
+    let token = localStorage.getItem("token");
+    fetch("http://localhost:3000/api/v1/current_user/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Action: "application/json",
+        Authorization: `${token}`
+      }
+    });
+  }
+
+  fetchCharacters = () => {
     fetch("http://localhost:3001/potter-stuff")
       .then(res => res.json())
       .then(charList =>
@@ -29,27 +43,72 @@ class App extends Component {
           filteredArr: charList
         })
       );
-  }
+  };
+
+  signupFormSubmitHandler = (e, userInfo) => {
+    e.preventDefault();
+    this.createUser(userInfo);
+    this.props.history.push("/");
+  };
+  loginSubmitHandler = (e, userInfo) => {
+    e.preventDefault();
+    this.getUser(userInfo);
+    this.props.history.push("/");
+  };
+
+  createUser = userInfo => {
+    fetch("http://localhost:3000/api/v1/users/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accepts: "application/json"
+      },
+      body: JSON.stringify({
+        user: {
+          username: userInfo.signupUsername,
+          password: userInfo.signupPassword
+        }
+      })
+    })
+      .then(resp => resp.json())
+      .then(resp => {
+        localStorage.setItem("token", resp.jwt);
+        this.setState({
+          user: resp.user
+        });
+      });
+  };
+  getUser = userInfo => {
+    fetch("http://localhost:3000/api/v1/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accepts: "application/json"
+      },
+      body: JSON.stringify({
+        user: {
+          username: userInfo.loginUsername,
+          password: userInfo.loginPassword
+        }
+      })
+    })
+      .then(resp => resp.json())
+      .then(resp => {
+        localStorage.setItem("token", resp.jwt);
+        this.setState({
+          user: resp.user
+        });
+      });
+  };
 
   handleHouseChange = e => {
-    console.log(e);
-    //find specific character based on click
     let house = e.target.value;
     this.setState({
       houseSelected: house
     });
-
-    //option 1:
-    //grab the specific character based on name
     let newArr = [...this.state.characters];
-    //find the index of that character of the obj name you stored in state.
-    // let indexOfChar = newArr.findIndex(
-    //   y => y.name === this.state.character.name
-    // );
-    //find char obj via === to character in state
     let character = newArr.find(char => char === this.state.character);
     console.log("chracter", character);
-    //change the house of the specifc characer to the hosue Selected.
     character.house = house;
     console.log("character after changing house", character);
   };
@@ -81,6 +140,7 @@ class App extends Component {
   //change the props for that character
 
   render() {
+    console.log("IN APP", this.state.user);
     return (
       <div>
         <NavBar />
@@ -99,7 +159,26 @@ class App extends Component {
             path="/houses"
             render={() => (
               <HouseListContainer
+                user={this.state.user}
                 characters={this.state.filteredArr}
+                handleCharacterClick={this.handleCharacterClick}
+              />
+            )}
+          />
+          <Route
+            path="/signup"
+            render={() => (
+              <SignupForm
+                signupFormSubmitHandler={this.signupFormSubmitHandler}
+                handleCharacterClick={this.handleCharacterClick}
+              />
+            )}
+          />
+          <Route
+            path="/login"
+            render={() => (
+              <LoginForm
+                loginSubmitHandler={this.loginSubmitHandler}
                 handleCharacterClick={this.handleCharacterClick}
               />
             )}
@@ -130,4 +209,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withRouter(App);

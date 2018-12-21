@@ -13,8 +13,11 @@ const NavBar = () => {
       <Link to="/houses">
         <li className="navitem">Houses</li>
       </Link>
-      <Link to="login">
-        <li className="navitem">Login/Sign Up</li>
+      <Link to="/signup">
+        <li className="navitem">Sign Up</li>
+      </Link>
+      <Link to="/login">
+        <li className="navitem">Log In</li>
       </Link>
     </ul>
   );
